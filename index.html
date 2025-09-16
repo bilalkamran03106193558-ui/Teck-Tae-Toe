@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tic Tac Toe - Unique Theme</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    /* Footer */
+    .footer {
+      position: fixed;
+      bottom: 10px;
+      right: 15px;
+      font-size: 0.9rem;
+      color: #ccc;
+      font-weight: bold;
+    }
+
+    /* Popup Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 10;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.6);
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-content {
+      background: #2c2f33;
+      padding: 20px;
+      border-radius: 15px;
+      text-align: center;
+      color: white;
+      width: 80%;
+      max-width: 300px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+    }
+
+    .modal-content h2 {
+      margin-bottom: 15px;
+    }
+
+    .modal-content button {
+      background: #5865f2;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .modal-content button:hover {
+      background: #4752c4;
+    }
+  </style>
+</head>
+<body>
+  <div class="game-container">
+    <h1>Tic Tac Toe</h1>
+    <div class="board" id="board">
+      <div class="cell" data-index="0"></div>
+      <div class="cell" data-index="1"></div>
+      <div class="cell" data-index="2"></div>
+      <div class="cell" data-index="3"></div>
+      <div class="cell" data-index="4"></div>
+      <div class="cell" data-index="5"></div>
+      <div class="cell" data-index="6"></div>
+      <div class="cell" data-index="7"></div>
+      <div class="cell" data-index="8"></div>
+    </div>
+    <p id="status">Player X's turn</p>
+    <div class="buttons">
+      <button id="reset">Reset</button>
+      <button id="new-game">New Game</button>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">Made by BTrexOP</div>
+
+  <!-- Modal -->
+  <div id="resultModal" class="modal">
+    <div class="modal-content">
+      <h2 id="resultMessage"></h2>
+      <button id="closeModal">OK</button>
+    </div>
+  </div>
+
+  <script>
+    const cells = document.querySelectorAll(".cell");
+    const statusText = document.getElementById("status");
+    const resetBtn = document.getElementById("reset");
+    const newGameBtn = document.getElementById("new-game");
+    const modal = document.getElementById("resultModal");
+    const resultMessage = document.getElementById("resultMessage");
+    const closeModal = document.getElementById("closeModal");
+
+    let currentPlayer = "X";
+    let gameActive = true;
+    let gameState = ["", "", "", "", "", "", "", "", ""];
+
+    const winConditions = [
+      [0, 1, 2], [3, 4, 5], [6, 7, 8],
+      [0, 3, 6], [1, 4, 7], [2, 5, 8],
+      [0, 4, 8], [2, 4, 6]
+    ];
+
+    function handleCellClick(e) {
+      const index = e.target.dataset.index;
+      if (gameState[index] !== "" || !gameActive) return;
+
+      gameState[index] = currentPlayer;
+      e.target.textContent = currentPlayer;
+
+      if (checkWin()) {
+        showResult(`Player ${currentPlayer} Wins! 🎉`);
+        gameActive = false;
+      } else if (!gameState.includes("")) {
+        showResult("It's a Draw! 🤝");
+        gameActive = false;
+      } else {
+        currentPlayer = currentPlayer === "X" ? "O" : "X";
+        statusText.textContent = `Player ${currentPlayer}'s turn`;
+      }
+    }
+
+    function checkWin() {
+      return winConditions.some(condition =>
+        condition.every(index => gameState[index] === currentPlayer)
+      );
+    }
+
+    function resetBoard() {
+      gameState = ["", "", "", "", "", "", "", "", ""];
+      gameActive = true;
+      currentPlayer = "X";
+      statusText.textContent = "Player X's turn";
+      cells.forEach(cell => (cell.textContent = ""));
+      modal.style.display = "none";
+    }
+
+    function showResult(message) {
+      resultMessage.textContent = message;
+      modal.style.display = "flex";
+    }
+
+    cells.forEach(cell => cell.addEventListener("click", handleCellClick));
+    resetBtn.addEventListener("click", resetBoard);
+    newGameBtn.addEventListener("click", resetBoard);
+    closeModal.addEventListener("click", resetBoard);
+  </script>
+</body>
+</html>
